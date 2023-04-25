@@ -3,11 +3,11 @@ package ru.javawebinar.topjava.util;
 import ru.javawebinar.topjava.model.UserMeal;
 import ru.javawebinar.topjava.model.UserMealWithExcess;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class UserMealsUtil {
     public static void main(String[] args) {
@@ -28,12 +28,28 @@ public class UserMealsUtil {
     }
 
     public static List<UserMealWithExcess> filteredByCycles(List<UserMeal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
-        // TODO return filtered list with excess. Implement by cycles
-        return null;
+        Map<LocalDate, List<UserMeal>> sortedMeals = new HashMap<>();
+        Map<LocalDate, Integer> sumOfCalories = new HashMap<>();
+        for (UserMeal meal : meals) {
+            LocalDate mealDate = meal.getDateTime().toLocalDate();
+            if (!sortedMeals.containsKey(mealDate)) {
+                sortedMeals.put(mealDate, new ArrayList<>());
+            }
+            sortedMeals.get(mealDate).add(meal);
+            sumOfCalories.put(mealDate, Optional.ofNullable(sumOfCalories.get(mealDate)).orElse(0)  + meal.getCalories());
+        }
+        List<UserMealWithExcess> filteredMeals = new ArrayList<>();
+        for (UserMeal meal : meals) {
+            LocalDateTime mealDateTime = meal.getDateTime();
+            if (TimeUtil.isBetweenHalfOpen(mealDateTime.toLocalTime(), startTime, endTime)) {
+                boolean excess = sumOfCalories.get(mealDateTime.toLocalDate()) > caloriesPerDay;
+                filteredMeals.add(new UserMealWithExcess(mealDateTime, meal.getDescription(), meal.getCalories(), excess));
+            }
+        }
+        return filteredMeals;
     }
 
     public static List<UserMealWithExcess> filteredByStreams(List<UserMeal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
-        // TODO Implement by streams
         return null;
     }
 }
