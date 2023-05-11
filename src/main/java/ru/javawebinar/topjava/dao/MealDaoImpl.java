@@ -1,46 +1,35 @@
 package ru.javawebinar.topjava.dao;
 
 import ru.javawebinar.topjava.model.Meal;
+import ru.javawebinar.topjava.util.MealsUtil;
 
-import java.time.LocalDateTime;
-import java.time.Month;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class MealDaoImpl implements MealDao{
 
-    private static Integer counter = 0;
-    public static final Map<Integer, Meal> meals = new HashMap<>();
-    static {
-        meals.put(counter, new Meal(0, LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак", 500));
-        counter++;
-        meals.put(counter, new Meal(1, LocalDateTime.of(2020, Month.JANUARY, 30, 13, 0), "Обед", 1000));
-        counter++;
-        meals.put(counter, new Meal(2, LocalDateTime.of(2020, Month.JANUARY, 30, 20, 0), "Ужин", 500));
-        counter++;
-        meals.put(counter, new Meal(3, LocalDateTime.of(2020, Month.JANUARY, 31, 0, 0), "Еда на граничное значение", 100));
-        counter++;
-        meals.put(counter, new Meal(4, LocalDateTime.of(2020, Month.JANUARY, 31, 10, 0), "Завтрак", 1000));
-        counter++;
-        meals.put(counter, new Meal(5, LocalDateTime.of(2020, Month.JANUARY, 31, 13, 0), "Обед", 500));
-        counter++;
-        meals.put(counter, new Meal(6, LocalDateTime.of(2020, Month.JANUARY, 31, 20, 0), "Ужин", 410));
-        counter++;
+    private static AtomicInteger counter = new AtomicInteger(0);
+
+    public static final Map<Integer, Meal> meals = new ConcurrentHashMap<>();
+
+    {
+        MealsUtil.meals.forEach(this::save);
     }
 
     @Override
-    public void add(Meal meal) {
-        meal.setId(++counter);
-        meals.put(counter, meal);
+    public Meal save(Meal meal) {
+        if (meal.isNew()) {
+            meal.setId(counter.incrementAndGet());
+            meals.put(meal.getId(), meal);
+            return meal;
+        }
+        return meals.computeIfPresent(meal.getId(), (id, oldMeal) -> meal);
     }
 
     @Override
-    public void update(Meal meal) {
-        meals.put(meal.getId(), meal);
-    }
-
-    @Override
-    public void delete(int mealId) {
-        meals.remove(mealId);
+    public boolean delete(int mealId) {
+        return meals.remove(mealId) != null;
     }
 
     @Override
@@ -49,7 +38,7 @@ public class MealDaoImpl implements MealDao{
     }
 
     @Override
-    public Meal getById(int mealId) {
+    public Meal get(int mealId) {
         return meals.get(mealId);
     }
 }
