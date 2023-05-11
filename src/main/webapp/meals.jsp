@@ -1,48 +1,48 @@
-<%@ page contentType="text/html;charset=UTF-8" %>
+<%--
+  Created by IntelliJ IDEA.
+  User: Kirill
+  Date: 25.04.2023
+  Time: 15:37
+  To change this template use File | Settings | File Templates.
+--%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ taglib prefix="fn" uri="http://topjava.javawebinar.ru/functions" %>
-<%--<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>--%>
 <html>
 <head>
-    <title>Meal list</title>
+    <title>Meals</title>
     <style>
         .normal {
             color: green;
         }
-
         .excess {
             color: red;
         }
     </style>
 </head>
 <body>
-<section>
-    <h3><a href="index.html">Home</a></h3>
-    <hr/>
-    <h2>Meals</h2>
-    <table border="1" cellpadding="8" cellspacing="0">
-        <thead>
-        <tr>
-            <th>Date</th>
-            <th>Description</th>
-            <th>Calories</th>
-        </tr>
-        </thead>
-        <c:forEach items="${requestScope.meals}" var="meal">
-            <jsp:useBean id="meal" type="ru.javawebinar.topjava.model.MealTo"/>
-            <tr class="${meal.excess ? 'excess' : 'normal'}">
-                <td>
-                        <%--${meal.dateTime.toLocalDate()} ${meal.dateTime.toLocalTime()}--%>
-                        <%--<%=TimeUtil.toString(meal.getDateTime())%>--%>
-                        <%--${fn:replace(meal.dateTime, 'T', ' ')}--%>
-                        ${fn:formatDateTime(meal.dateTime)}
-                </td>
-                <td>${meal.description}</td>
-                <td>${meal.calories}</td>
+        <table border="1">
+            <thead>
+            <tr>
+                <th>Description</th>
+                <th>DateTime</th>
+                <th>Calories</th>
+                <th colspan=2>Action</th>
             </tr>
-        </c:forEach>
-    </table>
-</section>
+            </thead>
+            <tbody>
+            <c:forEach items="${meals}" var="meal">
+                <fmt:parseDate value="${meal.dateTime}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
+                <tr>
+                    <td><c:out value="${meal.description}" /></td>
+                    <td><fmt:formatDate pattern="dd.MM.yyyy HH:mm" value="${parsedDateTime}" /></td>
+                    <td><c:out value="${meal.calories}" /> </td>
+                    <td><a href="meals?action=edit&mealId=<c:out value="${meal.id}"/>">Update</a></td>
+                    <td><a href="meals?action=delete&mealId=<c:out value="${meal.id}"/>">Delete</a></td>
+                </tr>
+            </c:forEach>
+            </tbody>
+        </table>
+        <p><a href="meals?action=insert">Add meal</a> </p>
 </body>
 </html>
