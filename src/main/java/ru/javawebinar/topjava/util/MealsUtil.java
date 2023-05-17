@@ -50,8 +50,21 @@ public class MealsUtil {
                 .map(meal -> createTo(meal, caloriesSumByDate.get(meal.getDate()) > caloriesPerDay))
                 .collect(Collectors.toList());
     }
-
-    private static MealTo createTo(Meal meal, boolean excess) {
+    public static Meal create(MealTo mealTo) {
+//        if (mealTo.getId() == null) {
+//            return new Meal(
+//                    null,
+//                    mealTo.getDateTime(),
+//                    mealTo.getDescription(),
+//                    mealTo.getCalories());
+//        }
+        return new Meal(
+                mealTo.getId(),
+                mealTo.getDateTime(),
+                mealTo.getDescription(),
+                mealTo.getCalories());
+    }
+    public static MealTo createTo(Meal meal, boolean excess) {
         return new MealTo(meal.getId(), meal.getDateTime(), meal.getDescription(), meal.getCalories(), excess);
     }
 }
