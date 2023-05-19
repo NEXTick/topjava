@@ -8,7 +8,6 @@ public abstract class AbstractNamedEntity extends AbstractBaseEntity {
         super(id);
         this.name = name;
     }
-
     public void setName(String name) {
         this.name = name;
     }

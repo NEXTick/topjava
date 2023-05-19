@@ -35,7 +35,7 @@ public class MealsUtil {
     }
 
     public static List<MealTo> getFilteredTos(Collection<Meal> meals, int caloriesPerDay, LocalTime startTime, LocalTime endTime) {
-        return filteredByPredicate(meals, caloriesPerDay, meal -> DateTimeUtil.isBetweenHalfOpen(meal.getTime(), startTime, endTime));
+        return filteredByPredicate(meals, caloriesPerDay, meal -> Util.isBetweenHalfOpen(meal.getTime(), startTime, endTime));
     }
 
     private static List<MealTo> filteredByPredicate(Collection<Meal> meals, int caloriesPerDay, Predicate<Meal> filter) {
@@ -50,21 +50,8 @@ public class MealsUtil {
                 .map(meal -> createTo(meal, caloriesSumByDate.get(meal.getDate()) > caloriesPerDay))
                 .collect(Collectors.toList());
     }
-    public static Meal create(MealTo mealTo) {
-//        if (mealTo.getId() == null) {
-//            return new Meal(
-//                    null,
-//                    mealTo.getDateTime(),
-//                    mealTo.getDescription(),
-//                    mealTo.getCalories());
-//        }
-        return new Meal(
-                mealTo.getId(),
-                mealTo.getDateTime(),
-                mealTo.getDescription(),
-                mealTo.getCalories());
-    }
-    public static MealTo createTo(Meal meal, boolean excess) {
+
+    private static MealTo createTo(Meal meal, boolean excess) {
         return new MealTo(meal.getId(), meal.getDateTime(), meal.getDescription(), meal.getCalories(), excess);
     }
 }
